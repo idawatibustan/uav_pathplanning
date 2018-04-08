@@ -1,0 +1,3 @@
+#!/bin/bash
+source devel/setup.bash
+rosrun hector_quadrotor_reference refPub _obsAdr:="/home/sp/simlite/obs" _refAdr:="/home/sp/simlite/ref"

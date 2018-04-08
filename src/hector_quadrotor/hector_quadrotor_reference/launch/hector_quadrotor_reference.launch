@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="hector_quadrotor_reference" name="refPub" type="refPub"/>
+</launch>

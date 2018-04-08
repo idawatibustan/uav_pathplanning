@@ -1,0 +1,3 @@
+#!/bin/bash
+source devel/setup.bash
+rosrun hector_quadrotor_reference refPubNoReset _refAdr:="/home/shupeng/test.txt"

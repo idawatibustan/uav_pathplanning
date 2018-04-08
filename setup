@@ -1,0 +1,3 @@
+#!/bin/bash
+source devel/setup.bash
+roslaunch hector_quadrotor_demo indoor_slam_gazebo.launch

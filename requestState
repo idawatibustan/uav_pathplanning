@@ -1,0 +1,4 @@
+#!/bin/bash
+source devel/setup.bash
+rosservice call gazebo/get_model_state '{model_name: quadrotor}'
+
