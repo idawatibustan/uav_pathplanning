@@ -35,7 +35,7 @@ max_iter = total_time / tstep;
 %----------------------------------------------------------------
 for iter = 1:max_iter
     t = time;
-    
+
     if t >= total_time
         pos = p(end,:);
         vel = [0;0;0];
