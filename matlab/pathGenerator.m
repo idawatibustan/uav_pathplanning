@@ -1,3 +1,7 @@
+clc
+clearvars -except smooth_path
+close all
+
 %% Path generator script
 %  Author: Erwin Dassen (EDAS)
 %  Date last update: 2013-11-05
@@ -44,7 +48,7 @@ if exist('pathGen','var') ~= 1
     pathGen.dim = 2;
 
     % The time resolution for the output.
-    pathGen.time_step = 0.1;
+    pathGen.time_step = 0.05;
 
     % The time interval increment step size. If a path found is not valid we
     % give more time for a path and rerun the algorithm. This determines by how
@@ -56,17 +60,45 @@ if exist('pathGen','var') ~= 1
 
     % The velocity, acceleration and jurk constraints. Written in dim x 1
     % vectors with positive entries.
-    pathGen.v_max = [3;3];
-    pathGen.a_max = [75;75];
-    pathGen.j_max = [7500;7500];
+    pathGen.v_max = [1;1];
+    pathGen.a_max = [8;8];
+    pathGen.j_max = [100;100];
 
     % The waypoints in the state-space for the path. Arraged in two dim x n matrices where n is
     % the number of waypoints (n > 1). The first, array_ps contains positions
     % and the second array_vs velocities. The code tests if these already
     % exists in the workspace and uses that in that case. You can choose to
     % specidy here instead.
-    pathGen.array_ps = [-1 -1 1 1 -1; -1 1 1 -1 -1]; % A square movement.
-    pathGen.array_vs = [0 0 0.1 -0.1 0; 0 0.1 -0.1 -0.1 0];
+
+    max_vel = 1 ; % Maximum velocity allowed
+    n = length(smooth_path); % Number of points in position vector
+    dim = 2; % Number of dimensions
+
+    pathGen.array_ps = smooth_path'; % A square movement.
+    pathGen.array_vs = zeros(dim,n);
+    path_length = length(pathGen.array_ps) ;
+    alpha = 0 ;
+
+    for i = 2:length(pathGen.array_ps)-1
+        point_nbr = i ;
+        speed = max_vel ;
+        delta_y = pathGen.array_ps(2,i+1)-pathGen.array_ps(2,i);
+        delta_x = pathGen.array_ps(1,i+1)-pathGen.array_ps(1,i);
+        alpha_previous = alpha ;
+        alpha = atan(delta_y/delta_x);
+        %speed_limit ;
+        pathGen.array_vs(1,i) = speed * cos(alpha);
+        pathGen.array_vs(2,i) = speed * sin(alpha);
+        if delta_y == 0
+            if delta_x < 0
+                pathGen.array_vs(1,i) = -speed;
+            end
+        elseif delta_x == 0
+            if delta_y < 0
+                pathGen.array_vs(2,i) = -speed;
+            end
+        end
+    end
 end
 
 lplot = pathGen.lplot;
@@ -233,13 +265,13 @@ for ii = 1:(np - 1) % np - 1 path segments
     tempfuna = @(i,t) a(i,t,coef);
     tempfunj = @(i,t) j(i,t,coef);
     
+
     ttime = horzcat(ttime, ttime(end) + time_seg);
     
     path = horzcat(path, ...
         arrayfun(tempfunp,ones(1,l1),time_seg(i1),'UniformOutput',false), ...
         arrayfun(tempfunp,2.*ones(1,l2),time_seg(i2),'UniformOutput',false), ...
         arrayfun(tempfunp,3.*ones(1,l3),time_seg(i3),'UniformOutput',false));
-
     velocity = horzcat(velocity, ...
         arrayfun(tempfunv,ones(1,l1),time_seg(i1),'UniformOutput',false), ...
         arrayfun(tempfunv,2.*ones(1,l2),time_seg(i2),'UniformOutput',false), ...
@@ -391,7 +423,3 @@ clear path;
 clear velocity;
 clear acceleration;
 clear jurk;
-
-
-
- 
