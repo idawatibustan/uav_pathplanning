@@ -1,10 +1,21 @@
 src/hector_gazebo/*
+src/hector_quadrotor/hector_quadrotor/*
+src/hector_quadrotor/hector_quadrotor_c*
+src/hector_quadrotor/hector_quadrotor_d*
+src/hector_quadrotor/hector_quadrotor_g*
+src/hector_quadrotor/hector_quadrotor_m*
+src/hector_quadrotor/hector_quadrotor_t*
+src/hector_quadrotor/hector_uav_msgs/*
+
 
 # OSX files
 .DS_Store
 
+#ROS
+.catkin_workspace
 build/
 bin/
+devel/
 lib/
 msg_gen/
 srv_gen/
