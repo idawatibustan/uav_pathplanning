@@ -6,6 +6,8 @@ close all
 %----------------------------------------------------------------
 %Map params
 %----------------------------------------------------------------
+reduce_path_generated = false;
+
 width = 6;
 height = 6;
 resolution = 0.01;
@@ -120,8 +122,13 @@ end
 %------------------------------------------------------------------
 %Path Point Reduction
 %------------------------------------------------------------------
-tol = 0.1 ;
 
+if (reduce_path_generated == false)
+    clearvars -except path obs num_obs ptb_idx
+    return;
+end
+
+tol = 0.1 ;
 i = 1;
 j= 3 ;
 distance_ok = true ;
@@ -148,7 +155,7 @@ for i=1:length(path)
     end
 end
 
-figure('Name', 'Path less points')
+figure('Name', 'Path - reduced')
 plot(path(:,1),path(:,2), 'o'); hold on;
 for i = 1: num_obs
     plot(obs(1,i)+xp_ext,obs(2,i)+yp_ext,'--k');
