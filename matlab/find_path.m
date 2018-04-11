@@ -70,12 +70,12 @@ x = (0:resolution/1.1:width);
 y = (0:resolution/1.1:height);
 
 for i = 1:(1.1*width/resolution)
- for j = 1:(1.1*height/resolution)
-    if sqrt((x(i)- x_constraint_circle)^2+(y(j)-y_constraint_circle-resolution/2)^2) < r_constraint_circle ...
-    && y(j) > y_constraint_circle+0.5*r_constraint_circle
-        setOccupancy(map, [x(i) y(j)], 1)
-     end
- end
+    for j = 1:(1.1*height/resolution)
+        if sqrt((x(i)- x_constraint_circle)^2+(y(j)-y_constraint_circle-resolution/2)^2) < r_constraint_circle ...
+        && y(j) > y_constraint_circle+0.5*r_constraint_circle
+            setOccupancy(map, [x(i) y(j)], 1)
+        end
+    end
 end
 
 figure
@@ -99,22 +99,18 @@ grid on
 
 
 path = vertcat(start,path1(4:end-2,1:end),goal_1,path2(3:end-2,1:end),goal_2);
-path_x = path(1:end,1);
-path_y = path(1:end,2);
 
 figure('Name', 'Path Generated');
-hold on
-scatter(path_x',path_y');
+plot(path(:,1),path(:,2), 'o'); hold on;
 for i = 1: num_obs
     plot(obs(1,i)+xp_ext,obs(2,i)+yp_ext,'--k');
-    hold on ;
     plot(obs(1,i)+xp_int,obs(2,i)+yp_int,'-r');
 end;
 axis([0 6 0 6])
 pbaspect([1 1 1])
 hold off ;
 
-%finding the index of the goal
+% find the index of point b
 for i=1:length(path)
     if (path(i,:) == goal_1)
         ptb_idx = i ;
@@ -123,7 +119,7 @@ end
 
 %%
 %------------------------------------------------------------------
-%Path Smoothing
+%Path Point Reduction
 %------------------------------------------------------------------
 tol = 0.1 ;
 
@@ -146,18 +142,17 @@ while (distance_ok)
     end
 end
 
-%recompute the index of point b
+% update the index of point b
 for i=1:length(path)
     if (path(i,:) == goal_1)
         ptb_idx = i ;
     end
 end
 
- figure('Name', 'Path less points')
- plot(path(:,1),path(:,2), 'o'); hold on;
- for i = 1: num_obs
+figure('Name', 'Path less points')
+plot(path(:,1),path(:,2), 'o'); hold on;
+for i = 1: num_obs
     plot(obs(1,i)+xp_ext,obs(2,i)+yp_ext,'--k');
-    hold on ;
     plot(obs(1,i)+xp_int,obs(2,i)+yp_int,'-r');
 end;
 axis([0 6 0 6])
