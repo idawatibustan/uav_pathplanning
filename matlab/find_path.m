@@ -29,6 +29,7 @@ start = [-1.5 -1.5] + trans;
 goal_1 = [0 2] + trans;
 goal_2 = [1.5 -1.5] + trans;
 
+% constraint circle at point B
 r_constraint_circle = 0.3;
 x_constraint_circle = 3;
 y_constraint_circle = 4.5;
@@ -43,15 +44,13 @@ obs_size = [2 inf];
 obs = fscanf(obs_fileID, obs_format, obs_size);
 num_obs = length(obs);
 
-%strange coordinates
+% transform coordinates
+%  X = -Y
+%  Y =  X
 obs_exg = obs ;
 obs(1,:) = -obs_exg(2,:) ;
 obs(2,:) = obs_exg(1,:) ;
-
-for obs_i = 1:length(obs)
-    % populate obstacle
-    obs(:, obs_i) = obs(:, obs_i) + 3;
-end
+obs = obs + 3;
 
 %%
 %----------------------------------------------------------------
