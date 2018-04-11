@@ -12,11 +12,15 @@ clearvars -except path obs num_obs ptb_idx
 %IMPORTANT speed in generate ts
 speed_ts = 0.5 ;
 delta_vb = 0.03 ;
+
 %param to draw circles
 ang=0:0.01:2*pi;
-r=0.6 ;
-xp=r*cos(ang);
-yp=r*sin(ang);
+r_ext=0.7; % 0.7 if we use the line
+r_int = 0.6 ;
+xp_ext=r_ext*cos(ang);
+yp_ext=r_ext*sin(ang);
+xp_int=r_int*cos(ang);
+yp_int=r_int*sin(ang);
 
 %parameters on speed
 max_vel = 1 ;
@@ -33,9 +37,10 @@ max_j = 7.1 ;
 figure
 hold on
 scatter(path(:,1), path(:,2));
-for i = 1: num_obs
-    plot(obs(1,i)+xp,obs(2,i)+yp);
+ for i = 1: num_obs
+    plot(obs(1,i)+xp_ext,obs(2,i)+yp_ext,'--k');
     hold on ;
+    plot(obs(1,i)+xp_int,obs(2,i)+yp_int,'-r');
 end;
 axis([0 6 0 6])
 pbaspect([1 1 1])
@@ -51,6 +56,7 @@ activepath = path;
 recompute_path_velocity = 0 ;
 recompute_path_jerk = 0 ;
 recompute_path_ptb = 0 ;
+recompute_path_ptb_slow = 0 ;
 not_finish = true ;
 update_all_speed = true ;
 
@@ -109,17 +115,16 @@ while (not_finish)
             elseif (sqrt(power(vel(1),2) + power(vel(2),2)) < 0.3 - delta_vb)
                 %decrease time interval before
                 speed_ts = speed_ts*1.025 ;
-                max_vel = max_vel*1.05 ;
-                recompute_path_ptb = recompute_path_ptb + 1 ;
+                max_vel = max_vel*1.05 ; %otherwise unstable
+                recompute_path_ptb_slow = recompute_path_ptb_slow + 1 ;
                 update_all_speed = true ;
                 break
             end
         end
 
-        %ATTENTION the maximum speed we set here influences the speed we can
-        % allow in generate_ts
-        %%% if speed limit maxes the system fail decrese speed in
-        %%% generate_ts -- not meat demand on pt B anymore
+        % ATTENTION the maximum speed (max_vel) we set here influences the speed we can
+        % allow in generate_ts (max speed in generate_ts = 1/2 max_vel)
+        % We decrease the speed by letting more time for the interval
         if (sqrt(power(vel(1),2) + power(vel(2),2)) > max_vel)
             % 10% more
             for j = k+1:length(ts)
@@ -128,16 +133,6 @@ while (not_finish)
             update_all_speed = false ;
             total_time = ts(length(ts)) ;
             recompute_path_velocity = recompute_path_velocity + 1  % count how many time have recompute
-            break
-
-        % jerk constraint
-        %%% if the jerk constraint makes the thing fail, decread speed in generate_tss
-        elseif (sqrt(power(jerk(1),2) + power(jerk(2),2)) > max_j)
-            for j = k+1:length(ts)
-                ts(j) = ts(j) + (ts(k+1)-ts(k))*0.05 ;
-            end
-            total_time = ts(length(ts));
-            recompute_path_jerk= recompute_path_jerk + 1 ; % count how many time have recompute
             break
         end
 
@@ -169,12 +164,10 @@ hold on
 scatter(path(:,1), path(:,2));
 scatter(px, py);
 hold on ;
-ang=0:0.01:2*pi;
-xp=0.5*cos(ang);
-yp=0.5*sin(ang);
-for i = 1: num_obs
-    plot(obs(1,i)+xp,obs(2,i)+yp);
+ for i = 1: num_obs
+    plot(obs(1,i)+xp_ext,obs(2,i)+yp_ext,'--k');
     hold on ;
+    plot(obs(1,i)+xp_int,obs(2,i)+yp_int,'-r');
 end;
 axis([0 6 0 6])
 pbaspect([1 1 1])
@@ -242,10 +235,10 @@ hold off
 % give performance
 fprintf ('I had to recompute the path due to too large velocity %d times \n', ...
     recompute_path_velocity)
-fprintf ('I had to recompute the path due to too large jerk %d times \n', ...
-    recompute_path_jerk)
 fprintf ('I had to recompute the path due to too large velocity at b %d times \n', ...
     recompute_path_ptb)
+fprintf ('I had to recompute the path due to too slow velocity at b %d times \n', ...
+    recompute_path_ptb_slow)
 
 %transform back in their coordinates
 
