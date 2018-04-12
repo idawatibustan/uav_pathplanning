@@ -137,6 +137,17 @@ while (not_finish)
             recompute_path_velocity = recompute_path_velocity + 1  % count how many time have recompute
             break
         end
+        
+        % check for collision with position
+        if getOccupancy(map_check, pos)
+            disp('collision');
+            if ( hypot(activepath(k, :), activepath(k+1, :)) > coll_path_dist_threshold )
+                new_path = midpt( activepath(k, :), activepath(k+1, :) );
+                activepath = [ activepath(1:k, :); new_path; activepath(k+1:end,:) ] ;
+                update_all_speed = true ;
+                break;
+            end
+        end
 
         px(iter) = pos(1) ;
         py(iter) = pos(2) ;
