@@ -59,12 +59,15 @@ obs = obs + 3;
 %Map Creation
 %----------------------------------------------------------------
 map = robotics.BinaryOccupancyGrid(width,height,1/resolution)
+map_check = robotics.BinaryOccupancyGrid(width,height,1/resolution)
 
 % populate obstacle
 for obs_i = 1:length(obs)
     setOccupancy(map, obs(:, obs_i)', 1);
+    setOccupancy(map_check, obs(:, obs_i)', 1);
 end
 inflate(map,.75);
+inflate(map_check,.6);
 
 % constraint_circle
 x = (0:resolution/1.1:width);
@@ -93,9 +96,11 @@ planner
 path1 = findpath(planner,start,goal_1);
 figure()
 show(planner)
+print('prm_ptA_ptB','-dpng');
 path2 = findpath(planner,goal_1,goal_2);
 figure()
 show(planner)
+print('prm_ptB_ptC','-dpng');
 grid on
 
 
@@ -109,6 +114,7 @@ for i = 1: num_obs
 end;
 axis([0 6 0 6])
 pbaspect([1 1 1])
+print('path_generated','-dpng');
 hold off ;
 
 % find the index of point b
@@ -124,7 +130,7 @@ end
 %------------------------------------------------------------------
 
 if (reduce_path_generated == false)
-    clearvars -except map path obs num_obs ptb_idx
+    clearvars -except map_check path obs num_obs ptb_idx
     return;
 end
 
@@ -156,7 +162,7 @@ for i=1:length(path)
     end
 end
 
-figure('Name', 'Path - reduced')
+figure('Name', 'Path Reduced')
 plot(path(:,1),path(:,2), 'o'); hold on;
 for i = 1: num_obs
     plot(obs(1,i)+xp_ext,obs(2,i)+yp_ext,'--k');
@@ -164,6 +170,7 @@ for i = 1: num_obs
 end;
 axis([0 6 0 6])
 pbaspect([1 1 1])
+print('path_reduced','-dpng');
 hold off ;
 
-clearvars -except map path obs num_obs ptb_idx
+clearvars -except map_check path obs num_obs ptb_idx
