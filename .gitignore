@@ -7,11 +7,13 @@ src/hector_quadrotor/hector_quadrotor_m*
 src/hector_quadrotor/hector_quadrotor_t*
 src/hector_quadrotor/hector_uav_msgs/*
 
-
 # OSX files
 .DS_Store
 
-#ROS
+# MATLAB
+*.asv
+
+# ROS
 .catkin_workspace
 build/
 bin/
