@@ -6,7 +6,7 @@ close all
 %----------------------------------------------------------------
 %Map params
 %----------------------------------------------------------------
-reduce_path_generated = false;
+reduce_path_generated = true;
 
 width = 6;
 height = 6;
@@ -124,13 +124,13 @@ end
 %------------------------------------------------------------------
 
 if (reduce_path_generated == false)
-    clearvars -except path obs num_obs ptb_idx
+    clearvars -except map path obs num_obs ptb_idx
     return;
 end
 
 tol = 0.1 ;
-i = 1;
-j= 3 ;
+i = 1 ; % index of first path
+j = 3 ; % index of path two ahead
 distance_ok = true ;
 
 while (distance_ok)
@@ -138,11 +138,12 @@ while (distance_ok)
         path(i+1:j-2,:) = [] ;
         distance_ok = false ;
     elseif ((max(max(point_to_line_distance([path(i+1:j-1, :), zeros(j-i-1,1)], ...
-            [path(i,:), 0], [path(j,:), 0] )))>tol )...
-            || min(path(j,:) == goal_1))
-            path(i+1:j-2,:) = [] ;
-            i = i+1 ;
-            j = i+2 ;
+            [path(i,:), 0], [path(j,:), 0] )))>tol )...             % check point to line
+            || min(path(j,:) == goal_1)...                          % don't remove if it's point B
+            || check_path_collision(map, path(i,:), path(j-1,:)))   % check for collision
+        path(i+1:j-2,:) = [] ;
+        i = i+1 ;
+        j = i+2 ;
     else
         j = j+1 ;
     end
@@ -165,4 +166,4 @@ axis([0 6 0 6])
 pbaspect([1 1 1])
 hold off ;
 
-clearvars -except path obs num_obs ptb_idx
+clearvars -except map path obs num_obs ptb_idx
