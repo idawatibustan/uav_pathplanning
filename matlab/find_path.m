@@ -145,7 +145,7 @@ while (distance_ok)
         distance_ok = false ;
     elseif ((max(max(point_to_line_distance([path(i+1:j-1, :), zeros(j-i-1,1)], ...
             [path(i,:), 0], [path(j,:), 0] )))>tol )...             % check point to line
-            || min(path(j,:) == goal_1)...                          % don't remove if it's point B
+            || min(path(j-1,:) == goal_1)...                        % don't remove if it's point B
             || check_path_collision(map, path(i,:), path(j-1,:)))   % check for collision
         path(i+1:j-2,:) = [] ;
         i = i+1 ;

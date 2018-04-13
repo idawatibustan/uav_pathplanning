@@ -8,6 +8,9 @@ function [ collision ] = check_path_collision( map, pt1, pt2 )
 %
     collision = false;
 
+    if (pt1 == pt2)
+        return
+    end
     lxmb = @(x,mb) mb(1).*x + mb(2);
     diff = abs(pt2 - pt1) ;
     m = diff(2) / diff(1) ;
