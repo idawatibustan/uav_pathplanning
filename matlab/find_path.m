@@ -6,7 +6,7 @@ close all
 %----------------------------------------------------------------
 %Map params
 %----------------------------------------------------------------
-reduce_path_generated = false;
+reduce_path_generated = true;
 
 width = 6;
 height = 6;
@@ -59,12 +59,15 @@ obs = obs + 3;
 %Map Creation
 %----------------------------------------------------------------
 map = robotics.BinaryOccupancyGrid(width,height,1/resolution)
+map_check = robotics.BinaryOccupancyGrid(width,height,1/resolution)
 
 % populate obstacle
 for obs_i = 1:length(obs)
     setOccupancy(map, obs(:, obs_i)', 1);
+    setOccupancy(map_check, obs(:, obs_i)', 1);
 end
 inflate(map,.75);
+inflate(map_check,.6);
 
 % constraint_circle
 x = (0:resolution/1.1:width);
@@ -93,9 +96,11 @@ planner
 path1 = findpath(planner,start,goal_1);
 figure()
 show(planner)
+print('prm_ptA_ptB','-dpng');
 path2 = findpath(planner,goal_1,goal_2);
 figure()
 show(planner)
+print('prm_ptB_ptC','-dpng');
 grid on
 
 
@@ -109,6 +114,7 @@ for i = 1: num_obs
 end;
 axis([0 6 0 6])
 pbaspect([1 1 1])
+print('path_generated','-dpng');
 hold off ;
 
 % find the index of point b
@@ -124,13 +130,13 @@ end
 %------------------------------------------------------------------
 
 if (reduce_path_generated == false)
-    clearvars -except path obs num_obs ptb_idx
+    clearvars -except map_check path obs num_obs ptb_idx
     return;
 end
 
 tol = 0.1 ;
-i = 1;
-j= 3 ;
+i = 1 ; % index of first path
+j = 3 ; % index of path two ahead
 distance_ok = true ;
 
 while (distance_ok)
@@ -138,11 +144,12 @@ while (distance_ok)
         path(i+1:j-2,:) = [] ;
         distance_ok = false ;
     elseif ((max(max(point_to_line_distance([path(i+1:j-1, :), zeros(j-i-1,1)], ...
-            [path(i,:), 0], [path(j,:), 0] )))>tol )...
-            || min(path(j,:) == goal_1))
-            path(i+1:j-2,:) = [] ;
-            i = i+1 ;
-            j = i+2 ;
+            [path(i,:), 0], [path(j,:), 0] )))>tol )...             % check point to line
+            || min(path(j-1,:) == goal_1)...                        % don't remove if it's point B
+            || check_path_collision(map_check, path(i,:), path(j-1,:)))   % check for collision
+        path(i+1:j-2,:) = [] ;
+        i = i+1 ;
+        j = i+2 ;
     else
         j = j+1 ;
     end
@@ -155,7 +162,7 @@ for i=1:length(path)
     end
 end
 
-figure('Name', 'Path - reduced')
+figure('Name', 'Path Reduced')
 plot(path(:,1),path(:,2), 'o'); hold on;
 for i = 1: num_obs
     plot(obs(1,i)+xp_ext,obs(2,i)+yp_ext,'--k');
@@ -163,6 +170,7 @@ for i = 1: num_obs
 end;
 axis([0 6 0 6])
 pbaspect([1 1 1])
+print('path_reduced','-dpng');
 hold off ;
 
-clearvars -except path obs num_obs ptb_idx
+clearvars -except map_check path obs num_obs ptb_idx
