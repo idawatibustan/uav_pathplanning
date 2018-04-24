@@ -33,7 +33,7 @@ int main(int argc, char **argv)
   std::ifstream obsFile;
   float obsout[2];
   obsFile.open(obsAdr.c_str());
-  for (int i=0; i<3;i++)
+  for (int i=0; i<5;i++)
   {
     if(obsFile >> obsout[0] >> obsout[1])
     {
