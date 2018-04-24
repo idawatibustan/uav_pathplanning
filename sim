@@ -1,3 +1,5 @@
 #!/bin/bash
 source devel/setup.bash
-rosrun hector_quadrotor_reference refPub _obsAdr:="obs" _refAdr:="matlab/path.txt"
+# rosrun hector_quadrotor_reference refPub _obsAdr:="obs" _refAdr:="ref"
+# rosrun hector_quadrotor_reference refPub _obsAdr:="obs_task2" _refAdr:="path_task2"
+rosrun hector_quadrotor_reference refPub _obsAdr:="obs_task3" _refAdr:="path_task3"
