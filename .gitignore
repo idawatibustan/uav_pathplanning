@@ -1,4 +1,6 @@
-src/hector_gazebo/*
+src/hector_gazebo/hector_gazebo/*
+src/hector_gazebo/hector_gazebo_plugins/*
+src/hector_gazebo/hector_sensors_gazebo/*
 src/hector_quadrotor/hector_quadrotor/*
 src/hector_quadrotor/hector_quadrotor_c*
 src/hector_quadrotor/hector_quadrotor_d*
