@@ -46,6 +46,16 @@ int main(int argc, char **argv)
       msgMS.pose.position.z = 0.5;
       init_pos_pub.publish(msgMS);
     }
+    else {
+      gazebo_msgs::ModelState msgMS;
+      std::string str = "unit_cylinder_";
+      str.append(static_cast<std::ostringstream*>( &(std::ostringstream() << i+1) )->str());
+      msgMS.model_name = str;
+      msgMS.pose.position.x = 8;
+      msgMS.pose.position.y = i;
+      msgMS.pose.position.z = 0.5;
+      init_pos_pub.publish(msgMS);
+    }
   }
   /* Read the reference txt file*/
   std::ifstream refFile;
