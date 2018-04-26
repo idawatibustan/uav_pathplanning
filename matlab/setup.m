@@ -1,7 +1,3 @@
-clc
-clear all
-close all
-
 %maximum velocities
 v_max_front = 3.1 ;
 v_max_up = 2.2 ;
