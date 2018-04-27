@@ -99,11 +99,16 @@ int main(int argc, char **argv)
           msgGe.pose.position.y = refout[1];
           msgGe.pose.position.z = refout[2];
           ref_pos_pub.publish(msgGe);
-          if(refout[2] <= 0 && count > 100) {
-            ros::service::call("shutdown", eReq, eRes);
-            return 0;
-          }
         }
+      }
+      else
+      {
+        if(refout[2] <= 0)
+        {
+          ros::service::call("shutdown", eReq, eRes);
+          return 0;
+        }
+
       }
       ros::spinOnce();
 
